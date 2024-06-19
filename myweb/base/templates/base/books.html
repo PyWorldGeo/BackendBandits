@@ -1,0 +1,13 @@
+<div style="display: flex;">
+    {% for book in books %}
+        <div class="card" style="width: 18rem; margin-left: 30px;">
+          <img src="{{book.picture}}" class="card-img-top" alt="...">
+          <div class="card-body">
+            <h5 class="card-title">{{book.name}}</h5>
+            <h6>{{ book.author }}</h6>
+            <p class="card-text">{{book.description |slice:":100"}}</p>
+            <a href="#" class="btn btn-primary">Read</a>
+          </div>
+        </div>
+    {% endfor %}
+</div>

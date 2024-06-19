@@ -1,0 +1,15 @@
+{% extends 'main.html' %}
+
+{% block title %} <title>Home Page</title>{% endblock %}
+
+{% block content %}
+    <br>
+    <div class="object" style="margin-left: 10px;">
+        <h1>Online Library:</h1>
+    </div>
+    <hr>
+    <br>
+
+    {% include 'base/books.html' %}
+
+{% endblock %}
