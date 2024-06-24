@@ -1,13 +1,45 @@
-<div style="display: flex;">
-    {% for book in books %}
-        <div class="card" style="width: 18rem; margin-left: 30px;">
-          <img src="{{book.picture}}" class="card-img-top" alt="...">
-          <div class="card-body">
-            <h5 class="card-title">{{book.name}}</h5>
-            <h6>{{ book.author }}</h6>
-            <p class="card-text">{{book.description |slice:":100"}}</p>
-            <a href="#" class="btn btn-primary">Read</a>
-          </div>
+<style>
+    .home-container {
+        display: grid;
+        grid-template-columns: 1fr 5fr;
+    }
+
+    .genres {
+        margin: 50px 30px;
+    }
+</style>
+
+<div class="home-container">
+    <div class="genres">
+        <h3>Genres:</h3>
+        <br>
+        <a href="{{ request.path }}">All</a>
+        {% for genre in genres %}
+            <hr>
+            <a href="{{ request.path }}?q={{ genre.name }}">{{ genre }}</a>
+        {% endfor %}
+    </div>
+
+    <div>
+        <br>
+        <div class="object" style="margin-left: 10px;">
+            <h1>{{ heading }}:</h1>
         </div>
-    {% endfor %}
+        <hr>
+        <br>
+
+        <div style="display: flex;">
+            {% for book in books %}
+                <div class="card" style="width: 18rem; margin-left: 30px;">
+                  <img src="{{book.picture}}" class="card-img-top" alt="...">
+                  <div class="card-body">
+                    <h5 class="card-title">{{book.name}}</h5>
+                    <h6>{{ book.author }}</h6>
+                    <p class="card-text">{{book.description |slice:":100"}}</p>
+                    <a href="#" class="btn btn-primary">Read</a>
+                  </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 </div>
