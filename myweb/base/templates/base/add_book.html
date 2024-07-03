@@ -1,0 +1,63 @@
+{% extends 'main.html' %}
+
+{% block title %} <title>Add Book Page</title>{% endblock %}
+
+{% block content %}
+    <h1>Adding Book:</h1>
+    <form method="POST" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+            <label>Book Cover:</label>
+            <br>
+            {{ form.picture }}
+        </div>
+        <div>
+            <label>Book Title:</label>
+            <br>
+            {{form.name}}
+        </div>
+
+
+        <div>
+            <label for="book_author">Author:</label>
+            <br>
+            <input required type="text" name="author" list="author-list" >
+            <datalist id="author-list">
+                {% for author in authors %}
+                    <select id="book_author">
+                        <option value="{{ author.name }}">{{ author.name }}</option>
+                    </select>
+                {% endfor %}
+
+            </datalist>
+        </div>
+
+        <div>
+                <label for="book_genre">Genre:</label>
+                <br>
+                <input required type="text" name="genre" list="genre-list" >
+                <datalist id="genre-list">
+                    {% for genre in genres %}
+                        <select id="book_genre">
+                            <option value="{{ genre.name }}">{{ genre.name }}</option>
+                        </select>
+                    {% endfor %}
+
+                </datalist>
+        </div>
+
+        <div>
+            <label>Book Description:</label>
+            <br>
+            {{form.description}}
+        </div>
+
+        <div>
+            <label>Book Description:</label>
+            <br>
+            {{form.file}}
+        </div>
+        <br>
+        <input type="submit" value="Upload" >
+    </form>
+{% endblock %}

@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Book, User, Genre
+from .models import Book, User, Genre, Author
 from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from .forms import MyUserCreationForm, BookForm
 
 # Create your views here.
 def home(request):
@@ -81,3 +82,47 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     return redirect('home')
+
+def register_user(request):
+    form = MyUserCreationForm()
+
+    if request.method == 'POST':
+        form = MyUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.username = user.username.lower()
+            user.save()
+            login(request, user)
+            return redirect('profile', user.id)
+
+        else:
+            pass #messages
+
+
+
+    context = {'form': form}
+    return render(request, 'base/register.html', context)
+
+def add_book(request):
+    authors = Author.objects.all()
+    genres = Genre.objects.all()
+    form = BookForm()
+
+    if request.method == 'POST':
+        book_author = request.POST.get('author')
+        book_genre = request.POST.get('genre')
+
+        author, created = Author.objects.get_or_create(name=book_author)
+        genre, created = Genre.objects.get_or_create(name=book_genre)
+
+        form = BookForm(request.POST)
+
+        new_book = Book(picture=request.FILES['picture'], name=form.data['name'], author=author,
+                        description=form.data['description'], file=request.FILES['file'])
+
+        new_book.save()
+        new_book.genre.add(genre)
+        return redirect('home')
+
+    context = {'form': form, 'auther': authors, 'genres': genres}
+    return render(request, 'base/add_book.html', context)
