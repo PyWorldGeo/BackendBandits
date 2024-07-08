@@ -133,3 +133,14 @@ def add_book(request):
 def reading(request, id):
     book = Book.objects.get(id=id)
     return render(request, 'base/reading.html', {'book': book})
+
+
+def delete_book(request, id):
+    obj = Book.objects.get(id=id)
+
+    if request.method == "POST":
+        obj.picture.delete()
+        obj.file.delete()
+        obj.delete()
+        return redirect('home')
+    return render(request, 'base/delete.html', {'obj': obj})

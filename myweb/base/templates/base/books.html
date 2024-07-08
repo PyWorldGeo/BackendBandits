@@ -50,9 +50,13 @@
                         <a href="{% url 'reading' book.id %}" class="btn btn-primary">Read</a>
 
                         {% if book in request.user.books.all %}
-                            <a href="{% url 'delete' book.id %}" class="btn btn-primary">Delete</a>
+                            <a href="{% url 'drop' book.id %}" class="btn btn-primary">Drop</a>
                         {% else %}
                             <a href="{% url 'adding' book.id %}" class="btn btn-primary">Add</a>
+                        {% endif %}
+
+                        {% if request.user == book.creator %}
+                            <a href="{% url 'delete' book.id %}" class="btn btn-primary">Delete</a>
                         {% endif %}
                     {% endif %}
 
