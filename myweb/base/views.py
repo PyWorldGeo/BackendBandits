@@ -5,12 +5,15 @@ from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .forms import MyUserCreationForm, BookForm
+from .seeder import seeder_func
+from django.contrib import messages
 
 # Create your views here.
 def home(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
+    seeder_func()
     books = Book.objects.filter(Q(name__icontains=q) | Q(description__icontains=q) | Q(author__name__icontains=q) | Q(genre__name__icontains=q))
-    books = list(set(books))
+    books = list(dict.fromkeys(books))
     # books = Book.objects.all()
     # print(books[2].users.all())
     heading = "Online Library"
@@ -55,7 +58,6 @@ def delete(request, id):
     return render(request, 'base/delete.html', {'obj': obj})
 
 
-
 def login_user(request):
     if request.user.is_authenticated:
         return redirect('profile', request.user.id)
@@ -67,14 +69,14 @@ def login_user(request):
         try:
             user = User.objects.get(username=username)
         except:
-            pass
+            messages.error(request, 'User does not exist!')
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
             return redirect('profile', request.user.id)
         else:
-            pass
+            messages.error(request, 'User or Password is not correct!')
 
     return render(request, 'base/login.html')
 
@@ -96,7 +98,7 @@ def register_user(request):
             return redirect('profile', user.id)
 
         else:
-            pass #messages
+            messages.error(request, 'Follow The Instructions and create proper user and password...')
 
 
 
@@ -118,11 +120,16 @@ def add_book(request):
         form = BookForm(request.POST)
 
         new_book = Book(picture=request.FILES['picture'], name=form.data['name'], author=author,
-                        description=form.data['description'], file=request.FILES['file'])
+                        description=form.data['description'], file=request.FILES['file'], creator=request.user)
 
         new_book.save()
         new_book.genre.add(genre)
         return redirect('home')
 
-    context = {'form': form, 'auther': authors, 'genres': genres}
+    context = {'form': form, 'authors': authors, 'genres': genres}
     return render(request, 'base/add_book.html', context)
+
+
+def reading(request, id):
+    book = Book.objects.get(id=id)
+    return render(request, 'base/reading.html', {'book': book})

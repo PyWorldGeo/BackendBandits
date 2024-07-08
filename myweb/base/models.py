@@ -17,12 +17,18 @@ class Genre(models.Model):
 
 
 class Book(models.Model):
+    creator = models.ForeignKey('User', on_delete=models.SET("Unknown Creator"))
     picture = models.ImageField(null=True, blank=True)
     name = models.CharField(max_length=200)
     author = models.ForeignKey(Author, on_delete=models.SET("Unknown Author"))
     genre = models.ManyToManyField(Genre, related_name='books', blank=True)
     description = models.TextField(max_length=500)
     file = models.FileField(null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    update = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["name", 'created']
 
     def __str__(self):
         return f"{self.name} _ {self.author}"
