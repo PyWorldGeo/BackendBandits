@@ -4,7 +4,7 @@ from .models import Book, User, Genre, Author
 from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .forms import MyUserCreationForm, BookForm
+from .forms import MyUserCreationForm, BookForm, UserForm
 from .seeder import seeder_func
 from django.contrib import messages
 
@@ -121,9 +121,12 @@ def add_book(request):
 
         new_book = Book(picture=request.FILES['picture'], name=form.data['name'], author=author,
                         description=form.data['description'], file=request.FILES['file'], creator=request.user)
-
-        new_book.save()
-        new_book.genre.add(genre)
+        print(Book.objects.filter(name=new_book.name))
+        if not (Book.objects.filter(file=request.FILES['file']) or Book.objects.filter(name=new_book.name)):
+            new_book.save()
+            new_book.genre.add(genre)
+        else:
+            messages.error(request, 'File with same name already exists...')
         return redirect('home')
 
     context = {'form': form, 'authors': authors, 'genres': genres}
@@ -144,3 +147,18 @@ def delete_book(request, id):
         obj.delete()
         return redirect('home')
     return render(request, 'base/delete.html', {'obj': obj})
+
+
+@login_required(login_url='login')
+def update_user(request):
+    user = request.user
+    form = UserForm(instance=user)
+
+    if request.method == 'POST':
+        form = UserForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile', user.id)
+
+    context = {'form': form}
+    return render(request, 'base/update_user.html', context)

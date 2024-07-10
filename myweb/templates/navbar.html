@@ -31,6 +31,14 @@
         <input name="q" class="form-control me-2" type="search" placeholder="Search Book" aria-label="Search">
         <button class="btn bg-warning" type="submit">Search</button>
       </form>
+      {% if request.user.is_authenticated %}
+        <div style="margin: 0px 30px;">
+          <a href="{% url 'profile' request.user.id %}">
+            <img src="{{ request.user.avatar.url }}" width="50px" height="50px" style="border-radius: 50%;">
+            {{ request.user.username }}
+          </a>
+        </div>
+      {% endif %}
     </div>
   </div>
 </nav>
