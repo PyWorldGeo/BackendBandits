@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Book, User, Genre, Author
+from .models import Book, User, Genre, Author, Comment
 from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .forms import MyUserCreationForm, BookForm, UserForm
 from .seeder import seeder_func
 from django.contrib import messages
+
 
 # Create your views here.
 def home(request):
@@ -32,7 +33,7 @@ def profile(request, pk):
     # books = user.books.all()
     q = request.GET.get('q') if request.GET.get('q') != None else ''
     books = user.books.filter(Q(name__icontains=q) | Q(description__icontains=q) | Q(author__name__icontains=q) | Q(genre__name__icontains=q))
-    books = list(set(books))
+    books = list(dict.fromkeys(books))
     heading = "My Library"
     genres = Genre.objects.all()
     context = {"books": books, "heading": heading, 'genres': genres}
@@ -135,7 +136,14 @@ def add_book(request):
 
 def reading(request, id):
     book = Book.objects.get(id=id)
-    return render(request, 'base/reading.html', {'book': book})
+    book_comments = book.comment_set.all() #.order_by('-created')
+    if request.method == "POST":
+        Comment.objects.create(
+            user=request.user,
+            book=book,
+            body=request.POST.get('body')
+        )
+    return render(request, 'base/reading.html', {'book': book, 'comments': book_comments})
 
 
 def delete_book(request, id):
@@ -162,3 +170,13 @@ def update_user(request):
 
     context = {'form': form}
     return render(request, 'base/update_user.html', context)
+
+
+def delete_comment(request, id):
+    comment = Comment.objects.get(id=id)
+    book = comment.book
+    if request.method == 'POST':
+        comment.delete()
+        return redirect('reading', book.id)
+
+    return render(request, 'base/delete.html', {'obj': comment})
