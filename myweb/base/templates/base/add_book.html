@@ -3,61 +3,80 @@
 {% block title %} <title>Add Book Page</title>{% endblock %}
 
 {% block content %}
-    <h1>Adding Book:</h1>
-    <form method="POST" action="" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div>
-            <label>Book Cover:</label>
-            <br>
-            {{ form.picture }}
+    <main class="create-room layout">
+        <div class="container">
+          <div class="layout__box">
+            <div class="layout__boxHeader">
+              <div class="layout__boxTitle">
+                <a href="{% url 'home' %}">
+                  <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                    <title>arrow-left</title>
+                    <path
+                      d="M13.723 2.286l-13.723 13.714 13.719 13.714 1.616-1.611-10.96-10.96h27.625v-2.286h-27.625l10.965-10.965-1.616-1.607z">
+                    </path>
+                  </svg>
+                </a>
+                <h3>Add New Book</h3>
+              </div>
+            </div>
+            <div class="layout__body">
+              <form class="form" action="" method="POST" enctype="multipart/form-data">
+                  {% csrf_token %}
+                <div class="form__group">
+                  <label>Book Cover</label>
+                  {{ form.picture }}
+                </div>
+                <div class="form__group">
+                  <label>Book Title</label>
+                  {{ form.name }}
+                </div>
+
+                <div class="form__group">
+                    <label for="book_author">Author:</label>
+                    <input required type="text" name="author" list="author-list" >
+                    <datalist id="author-list">
+                        {% for author in authors %}
+                            <select id="book_author">
+                                <option value="{{ author.name }}">{{ author.name }}</option>
+                            </select>
+                        {% endfor %}
+
+                    </datalist>
+                </div>
+
+                <div class="form__group">
+                        <label for="book_genre">Genre:</label>
+                        <input required type="text" name="genre" list="genre-list" >
+                        <datalist id="genre-list">
+                            {% for genre in genres %}
+                                <select id="book_genre">
+                                    <option value="{{ genre.name }}">{{ genre.name }}</option>
+                                </select>
+                            {% endfor %}
+
+                        </datalist>
+                </div>
+
+                <div class="form__group">
+                  <label>Book Description:</label>
+                  {{ form.description }}
+                </div>
+                <div class="form__group">
+                  <label>PDF File:</label>
+                  {{ form.file }}
+                </div>
+
+
+                <div class="form__action">
+                  <a class="btn btn--dark" href="{% url 'home' %}">Cancel</a>
+                  <button class="btn btn--main" type="submit">Create Book</button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-        <div>
-            <label>Book Title:</label>
-            <br>
-            {{form.name}}
-        </div>
+    </main>
 
 
-        <div>
-            <label for="book_author">Author:</label>
-            <br>
-            <input required type="text" name="author" list="author-list" >
-            <datalist id="author-list">
-                {% for author in authors %}
-                    <select id="book_author">
-                        <option value="{{ author.name }}">{{ author.name }}</option>
-                    </select>
-                {% endfor %}
 
-            </datalist>
-        </div>
-
-        <div>
-                <label for="book_genre">Genre:</label>
-                <br>
-                <input required type="text" name="genre" list="genre-list" >
-                <datalist id="genre-list">
-                    {% for genre in genres %}
-                        <select id="book_genre">
-                            <option value="{{ genre.name }}">{{ genre.name }}</option>
-                        </select>
-                    {% endfor %}
-
-                </datalist>
-        </div>
-
-        <div>
-            <label>Book Description:</label>
-            <br>
-            {{form.description}}
-        </div>
-
-        <div>
-            <label>Book Description:</label>
-            <br>
-            {{form.file}}
-        </div>
-        <br>
-        <input type="submit" value="Upload" >
-    </form>
 {% endblock %}
